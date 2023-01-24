@@ -7,7 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>      
 	<body>
-        <h1 class="title">Gravitas Dialogue Portal</h1>
+        <button class="title" onclick="goToMenu('main-page')">Gravitas Dialogue Portal</button>
         <div id="main-page">
             <div>Welcome to the Gravitas Dialogue Portal. To get started, upload an existing dialogue file or create a new file.</div>
             <div class="main-menu-buttons">
@@ -22,16 +22,14 @@
             <div id="mode-select-filename">You have uploaded test.txt</div>
             <div class="main-menu-buttons">
                 <button class="site-button" onclick="editExistingDialogue()">Edit</button>
-                <button class="site-button" onclick="goToMenu('translate-page')">Translate</button>
+                <button class="site-button" onclick="translateExistingDialogue()">Translate</button>
             </div>
         </div>
         <div id="edit-page" style="display:none">
-            <div id="edit-page-content">
-
-            </div>
+            <div id="edit-page-content"></div>
         </div>
         <div id="translate-page" style="display:none">
-            We are now on the translating page.
+            <div id="translate-page-content"></div>
         </div>
         <script src="script.js"></script>
 	</body>

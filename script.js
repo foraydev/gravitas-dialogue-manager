@@ -76,7 +76,7 @@ class DialogueLine {
         this.speakerPicture = parts[0].trim();
         this.dialogue = parts[1].trim();
         this.flags = [];
-        this.dialogue.match(/\[\([!\w]+\)\]/)?.forEach(element => {
+        this.dialogue.match(/\[\([!_\-\w]+\)\]/)?.forEach(element => {
             this.flags.push(new StateFlag(element));
             this.dialogue = this.dialogue.replace(element, "");
         });
@@ -181,15 +181,34 @@ function setUpEditPage() {
     addElement('button', '+', 'edit-page-content', [['class', 'dialogue-button'], ['onclick', 'addExchange()']]);
 }
 
+function setUpTranslatePage() {
+    let allStrings = getAllStrings();
+    addElement('button', 'Export', 'translate-page-content', [['class', 'dialogue-button'], ['onclick', 'exportTranslatedFile()']]);
+    addElement('div', '', 'translate-page-content', [['id', 'error-msg-translate']]);
+    for (let i = 0; i < allStrings.length; i++) {
+        addElement('div', '', 'translate-page-content', [['class', 'translation-string-wrapper'], ['id', 'translation-wrapper-'+i]]);
+        addElement('div', allStrings[i], 'translation-wrapper-'+i, [['class', 'translation-string-original']]);
+        addElement('textarea', '', 'translation-wrapper-'+i, [['class', 'dialogue-textarea'], ['id', 'translation-input-'+i]]);
+    }
+}
+
 function createNewDialogue() {
     conversations = [];
-    conversations.push(new DialogueExchange("default{[exchange]}test{[text]}Lorem ipsum dolor iset."));
+    conversations.push(new DialogueExchange("default{[exchange]}new-character-normal{[text]}Lorem ipsum dolor iset."));
+    characterName = "New Character";
     goToMenu("edit-page");
+    setUpEditPage();
 }
 
 function editExistingDialogue() {
     goToMenu("edit-page");
     setUpEditPage();
+    getAllStrings();
+}
+
+function translateExistingDialogue() {
+    goToMenu("translate-page");
+    setUpTranslatePage();
 }
 
 function parseFileUpload() {
@@ -246,7 +265,7 @@ function toggleVisibility(dialogueNum) {
 
 function addExchange() {
     setAll();
-    conversations.push(new DialogueExchange("TestFlag{[exchange]}test{[text]}Lorem ipsum dolor iset."));
+    conversations.push(new DialogueExchange("TestFlag{[exchange]}"+characterName.toLowerCase()+"-normal{[text]}Lorem ipsum dolor iset."));
     setUpEditPage();
 }
 
@@ -329,6 +348,16 @@ function checkDialogueFile() {
     return 'no-error';
 }
 
+function checkTranslations() {
+    allStrings = getAllStrings();
+    for (let i = 0; i < allStrings.length; i++) {
+        if (allStrings[i].includes('{player}') && !document.getElementById('translation-input-'+i).value.includes('{player}')) {
+            return 'The original string \''+allStrings[i]+'\' contains {player}, but your translation does not. Make sure you include \'{player}\' before exporting.';
+        }
+    }
+    return 'no-error';
+}
+
 function setAll() {
     setCharacterName();
     for (let i = 0; i < conversations.length; i++) {
@@ -368,12 +397,13 @@ function setFlag(exchangeNum, lineNum, flagNum) {
 }
 
 function exportDialogueFile() {
-    let errorMsg = checkDialogueFile()
+    let errorMsg = checkDialogueFile();
     if (errorMsg != "no-error") {
         document.getElementById('error-msg').innerHTML = errorMsg;
     } else {
         document.getElementById('error-msg').innerHTML = '';
         const link = document.createElement("a");
+        setAll();
         const content = formatForExport();
         const file = new Blob([content], { type: 'text/plain' });
         link.href = URL.createObjectURL(file);
@@ -384,7 +414,6 @@ function exportDialogueFile() {
 }
 
 function formatForExport() {
-    setAll();
     let retStr = "";
     for (let exchange = 0; exchange < conversations.length; exchange++) {
         retStr += conversations[exchange].toString();
@@ -393,4 +422,43 @@ function formatForExport() {
         }
     }
     return retStr;
+}
+
+function getAllStrings() {
+    let allStrings = [];
+    conversations.forEach(exchange => {
+        exchange.lines.forEach(line => {
+            allStrings.push(formatDialogueForTranslation(line.dialogue));
+        });
+    });
+    return allStrings;
+}
+
+function formatDialogueForTranslation(dialogueLine) {
+    retStr = dialogueLine;
+    retStr.match(/<link.*\/link>/)?.forEach(element => {
+        insideText = element.substring(element.indexOf('">')+2, element.indexOf('</link>'));
+        retStr = retStr.replace(element, insideText);
+    });
+    return retStr;
+}
+
+function exportTranslatedFile() {
+    let errorMsg = checkTranslations();
+    if (errorMsg != "no-error") {
+        document.getElementById('error-msg-translate').innerHTML = errorMsg;
+    } else {
+        document.getElementById('error-msg-translate').innerHTML = '';
+        const link = document.createElement("a");
+        let content = formatForExport();
+        allStrings = getAllStrings();
+        for (let i = 0; i < allStrings.length; i++) {
+            content = content.replace(allStrings[i], document.getElementById('translation-input-'+i).value);
+        }
+        const file = new Blob([content], { type: 'text/plain' });
+        link.href = URL.createObjectURL(file);
+        link.download = 'dialogue-'+characterName.toLowerCase().replace(" ", "-")+'.txt';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
 }
