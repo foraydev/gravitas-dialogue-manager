@@ -75,6 +75,12 @@ class DialogueLine {
         let parts = setupString.split("{[text]}");
         this.speakerPicture = parts[0].trim();
         this.dialogue = parts[1].trim();
+        if (this.speakerPicture.includes('[(rightside)]')) {
+            this.speakerPicture = this.speakerPicture.replace('[(rightside)]', '');
+            this.useRightSide = true;
+        } else {
+            this.useRightSide = false;
+        }
         this.flags = [];
         this.dialogue.match(/\[\([!_\-\w]+\)\]/)?.forEach(element => {
             this.flags.push(new StateFlag(element));
@@ -85,6 +91,7 @@ class DialogueLine {
     toString() {
         let retStr = "";
         retStr += this.speakerPicture;
+        retStr += this.useRightSide ? "[(rightside)]" : "";
         retStr += "{[text]}";
         retStr += this.dialogue;
         for (let i = 0; i < this.flags.length; i++) {
@@ -96,6 +103,7 @@ class DialogueLine {
 
 class StateFlag {
     constructor(setupString) {
+        console.log('flag received: '+setupString);
         this.name = setupString.replace("[(", "").replace(")]", "");
         if (this.name[0] == "!") {
             this.name = this.name.substring[1];
@@ -156,6 +164,8 @@ function setUpEditPage() {
         // add the lines of dialogue
         for (let line = 0; line < conversations[exchange].lines.length; line++) {
             addElement('div', '', 'dialogue-exchange-'+exchange+'-body', [['class', 'dialogue-line-wrapper'], ['id', 'dialogue-exchange-'+exchange+'-line-wrapper-'+line]]);
+            addElement('div', "Use right-side portrait:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-rightside-label']]);
+            addElement('input', "", 'dialogue-exchange-'+exchange+'-line-'+line+'-rightside-label', [['class', 'checkbox'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-rightside'], ['type', 'checkbox'], conversations[exchange].lines[line].useRightSide ? ['checked', ''] : []]);
             addElement('div', "Speaker Picture:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-speaker-label']]);
             addElement('input', "", 'dialogue-exchange-'+exchange+'-line-'+line+'-speaker-label', [['class', 'dialogue-condition-input'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-speaker-input'], ['type', 'text'], ['value', conversations[exchange].lines[line].speakerPicture]]);
             addElement('div', "Dialogue:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label']]);
@@ -386,6 +396,7 @@ function setCondition(exchangeNum, conditionNum) {
 function setLine(exchangeNum, lineNum) {
     conversations[exchangeNum].lines[lineNum].speakerPicture = document.getElementById('dialogue-exchange-'+exchangeNum+'-line-'+lineNum+'-speaker-input').value;
     conversations[exchangeNum].lines[lineNum].dialogue = document.getElementById('dialogue-exchange-'+exchangeNum+'-line-'+lineNum+'-dialogue-input').value;
+    conversations[exchangeNum].lines[lineNum].useRightSide = document.getElementById('dialogue-exchange-'+exchangeNum+'-line-'+lineNum+'-rightside').checked;
     for (let i = 0; i < conversations[exchangeNum].lines[lineNum].flags.length; i++) {
         setFlag(exchangeNum, lineNum, i);
     }
@@ -405,6 +416,7 @@ function exportDialogueFile() {
         const link = document.createElement("a");
         setAll();
         const content = formatForExport();
+        console.log(content);
         const file = new Blob([content], { type: 'text/plain' });
         link.href = URL.createObjectURL(file);
         link.download = 'dialogue-'+characterName.toLowerCase().replace(" ", "-")+'.txt';
