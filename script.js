@@ -74,7 +74,12 @@ class DialogueLine {
     constructor(setupString) {
         let parts = setupString.split("{[text]}");
         this.speakerPicture = parts[0].trim();
-        this.dialogue = parts[1].trim();
+        this.dialogueBox = parts[1].trim();
+        if (parts.length > 2) {
+            this.dialogue = parts[2].trim();
+        } else {
+            this.dialogue = parts[1].trim();
+        }
         if (this.speakerPicture.includes('[(rightside)]')) {
             this.speakerPicture = this.speakerPicture.replace('[(rightside)]', '');
             this.useRightSide = true;
@@ -92,6 +97,8 @@ class DialogueLine {
         let retStr = "";
         retStr += this.speakerPicture;
         retStr += this.useRightSide ? "[(rightside)]" : "";
+        retStr += "{[text]}";
+        retStr += this.dialogueBox;
         retStr += "{[text]}";
         retStr += this.dialogue;
         for (let i = 0; i < this.flags.length; i++) {
@@ -164,10 +171,20 @@ function setUpEditPage() {
         // add the lines of dialogue
         for (let line = 0; line < conversations[exchange].lines.length; line++) {
             addElement('div', '', 'dialogue-exchange-'+exchange+'-body', [['class', 'dialogue-line-wrapper'], ['id', 'dialogue-exchange-'+exchange+'-line-wrapper-'+line]]);
+            // add the 'facing right' checkbox
             addElement('div', "Use right-side portrait:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-rightside-label']]);
             addElement('input', "", 'dialogue-exchange-'+exchange+'-line-'+line+'-rightside-label', [['class', 'checkbox'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-rightside'], ['type', 'checkbox'], conversations[exchange].lines[line].useRightSide ? ['checked', ''] : []]);
+            // add the speaker picture field
             addElement('div', "Speaker Picture:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-speaker-label']]);
             addElement('input', "", 'dialogue-exchange-'+exchange+'-line-'+line+'-speaker-label', [['class', 'dialogue-condition-input'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-speaker-input'], ['type', 'text'], ['value', conversations[exchange].lines[line].speakerPicture]]);
+            // add the dialogue bubble dropdown
+            addElement('div', "Dialogue Bubble Type:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-label']]);
+            addElement('select', "", 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-label', [['class', 'dialogue-condition-dropdown'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown']]);
+            addElement('option', 'Normal', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'normal'], (conversations[exchange].lines[line].dialogueBox == "normal" ? ['selected', ''] : [])]);
+            addElement('option', 'Angry', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'angry'], (conversations[exchange].lines[line].dialogueBox == "angry" ? ['selected', ''] : [])]);
+            addElement('option', 'Thought', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'thought'], (conversations[exchange].lines[line].dialogueBox == "thought" ? ['selected', ''] : [])]);
+            addElement('option', 'Radio', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'radio'], (conversations[exchange].lines[line].dialogueBox == "radio" ? ['selected', ''] : [])]);
+            // add the actual dialogue
             addElement('div', "Dialogue:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label']]);
             addElement('textarea', conversations[exchange].lines[line].dialogue, 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-textarea'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-dialogue-input'], ['rows', '5'], ['columns', '100']]);
             // add any scene flags that are set when this dialog line appears
@@ -280,8 +297,8 @@ function addExchange() {
 }
 
 function deleteExchange(dialogueNum) {
-    conversations.splice(dialogueNum, 1);
     setAll();
+    conversations.splice(dialogueNum, 1);
     setUpEditPage();
 }
 
@@ -395,6 +412,7 @@ function setCondition(exchangeNum, conditionNum) {
 
 function setLine(exchangeNum, lineNum) {
     conversations[exchangeNum].lines[lineNum].speakerPicture = document.getElementById('dialogue-exchange-'+exchangeNum+'-line-'+lineNum+'-speaker-input').value;
+    conversations[exchangeNum].lines[lineNum].dialogueBox = document.getElementById('dialogue-exchange-'+exchangeNum+'-line-'+lineNum+'-bubble-dropdown').value;
     conversations[exchangeNum].lines[lineNum].dialogue = document.getElementById('dialogue-exchange-'+exchangeNum+'-line-'+lineNum+'-dialogue-input').value;
     conversations[exchangeNum].lines[lineNum].useRightSide = document.getElementById('dialogue-exchange-'+exchangeNum+'-line-'+lineNum+'-rightside').checked;
     for (let i = 0; i < conversations[exchangeNum].lines[lineNum].flags.length; i++) {
