@@ -152,6 +152,7 @@ function setUpEditPage() {
         addElement("button", 'Move Up', 'dialogue-exchange-'+exchange+'-header', [['class', 'dialogue-button'], ['onclick', 'moveExchangeUp('+exchange+')']]);
         addElement("button", 'Move Down', 'dialogue-exchange-'+exchange+'-header', [['class', 'dialogue-button'], ['onclick', 'moveExchangeDown('+exchange+')']]);
         addElement("button", 'Collapse', 'dialogue-exchange-'+exchange+'-header', [['class', 'dialogue-button'], ['id', 'dialogue-toggle-'+exchange], ['onclick', 'toggleVisibility('+exchange+')']]);
+        addElement("button", 'Duplicate', 'dialogue-exchange-'+exchange+'-header', [['class', 'dialogue-button'], ['onclick', 'duplicateExchange('+exchange+')']]);
         addElement("button", 'Delete', 'dialogue-exchange-'+exchange+'-header', [['class', 'dialogue-button'], ['onclick', 'deleteExchange('+exchange+')']]);
         // create the body
         addElement('div', '', 'dialogue-exchange-'+exchange, [['class', 'dialogue-exchange-body'], ['id', 'dialogue-exchange-'+exchange+'-body']]);
@@ -184,6 +185,7 @@ function setUpEditPage() {
             addElement('option', 'Angry', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'angry'], (conversations[exchange].lines[line].dialogueBox == "angry" ? ['selected', ''] : [])]);
             addElement('option', 'Thought', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'thought'], (conversations[exchange].lines[line].dialogueBox == "thought" ? ['selected', ''] : [])]);
             addElement('option', 'Radio', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'radio'], (conversations[exchange].lines[line].dialogueBox == "radio" ? ['selected', ''] : [])]);
+            addElement('option', 'None', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'none'], (conversations[exchange].lines[line].dialogueBox == "none" ? ['selected', ''] : [])]);
             // add the actual dialogue
             addElement('div', "Dialogue:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label']]);
             addElement('textarea', conversations[exchange].lines[line].dialogue, 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-textarea'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-dialogue-input'], ['rows', '5'], ['columns', '100']]);
@@ -293,6 +295,12 @@ function toggleVisibility(dialogueNum) {
 function addExchange() {
     setAll();
     conversations.push(new DialogueExchange("TestFlag{[exchange]}"+characterName.toLowerCase()+"-normal{[text]}Lorem ipsum dolor iset."));
+    setUpEditPage();
+}
+
+function duplicateExchange(dialogueNum) {
+    setAll();
+    conversations.splice(dialogueNum, 0, conversations[dialogueNum]);
     setUpEditPage();
 }
 
