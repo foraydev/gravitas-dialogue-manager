@@ -186,6 +186,7 @@ function setUpEditPage() {
             addElement('option', 'Thought', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'thought'], (conversations[exchange].lines[line].dialogueBox == "thought" ? ['selected', ''] : [])]);
             addElement('option', 'Radio', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'radio'], (conversations[exchange].lines[line].dialogueBox == "radio" ? ['selected', ''] : [])]);
             addElement('option', 'None', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'none'], (conversations[exchange].lines[line].dialogueBox == "none" ? ['selected', ''] : [])]);
+            addElement('option', 'Lore', 'dialogue-exchange-'+exchange+'-line-'+line+'-bubble-dropdown', [['value', 'lore'], (conversations[exchange].lines[line].dialogueBox == "lore" ? ['selected', ''] : [])]);
             // add the actual dialogue
             addElement('div', "Dialogue:", 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-line-label']]);
             addElement('textarea', conversations[exchange].lines[line].dialogue, 'dialogue-exchange-'+exchange+'-line-wrapper-'+line, [['class', 'dialogue-textarea'], ['id', 'dialogue-exchange-'+exchange+'-line-'+line+'-dialogue-input'], ['rows', '5'], ['columns', '100']]);
