@@ -68,6 +68,10 @@ class DialogueExchange {
         }
         return retStr;
     }
+
+    duplicate() {
+        return new DialogueExchange(this.toString());
+    }
 }
 
 class DialogueLine {
@@ -105,6 +109,10 @@ class DialogueLine {
             retStr += "[("+this.flags[i].toString()+")]";
         }
         return retStr;
+    }
+
+    duplicate() {
+        return new DialogueLine(this.toString());
     }
 }
 
@@ -301,7 +309,7 @@ function addExchange() {
 
 function duplicateExchange(dialogueNum) {
     setAll();
-    conversations.splice(dialogueNum, 0, conversations[dialogueNum]);
+    conversations.splice(dialogueNum, 0, conversations[dialogueNum].duplicate());
     setUpEditPage();
 }
 
@@ -348,8 +356,9 @@ function addLine(dialogueNum) {
 }
 
 function deleteLine(dialogueNum, lineNum) {
-    conversations[dialogueNum].lines.splice(lineNum, 1);
     setAll();
+    console.log("deleting "+conversations[dialogueNum].lines[lineNum].dialogue);
+    conversations[dialogueNum].lines.splice(lineNum, 1);
     setUpEditPage();
 }
 
