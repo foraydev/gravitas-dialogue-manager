@@ -1,0 +1,45 @@
+.rowflex {
+    display: flex;
+    flex-direction: row;
+}
+
+.center {
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.btn {
+    width: 30px;
+    border: solid 2px black;
+    height: 30px;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    filter: brightness(0.8);
+    cursor: pointer;
+}
+
+.btn-square {
+    width: 30px;
+}
+
+.btn-rect {
+    width: 100px;
+}
+
+.mr-15 {
+    margin-right: 15px;
+}
+
+.ml-15 {
+    margin-left: 15px;
+}
+
+.ml-10 {
+    margin-left: 10px;
+}
+
+.mv-15 {
+    margin: 15px 0;
+}
