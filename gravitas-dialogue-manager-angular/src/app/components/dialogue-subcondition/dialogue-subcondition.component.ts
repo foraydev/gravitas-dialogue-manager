@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { DialogueFileService } from 'src/app/shared/dialogue-file.service';
-import { DialogueExchange, DialogueSubCondition } from 'src/app/shared/shared-classes';
+import { DialogueCondition, DialogueExchange, DialogueSubCondition } from 'src/app/shared/shared-classes';
 import { NEW_CONVERSATION } from 'src/app/shared/shared-constants';
 
 @Component({
@@ -10,7 +10,7 @@ import { NEW_CONVERSATION } from 'src/app/shared/shared-constants';
 })
 export class DialogueSubconditionComponent {
   @Input()
-  public conversation: DialogueExchange;
+  public condition: DialogueCondition;
 
   @Input()
   public subcondition: DialogueSubCondition;
@@ -18,7 +18,7 @@ export class DialogueSubconditionComponent {
   constructor(
     public state: DialogueFileService
   ) {
-    this.conversation = new DialogueExchange(NEW_CONVERSATION);
+    this.condition = new DialogueCondition('New Flag');
     this.subcondition = new DialogueSubCondition('New Flag');
   }
 }

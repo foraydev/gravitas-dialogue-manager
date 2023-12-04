@@ -1,4 +1,5 @@
 import { FormControl } from "@angular/forms";
+import { NodeIdService } from "./node-id-service";
 
 export class DialogueCondition {
     public conditions: DialogueSubCondition[];
@@ -6,7 +7,7 @@ export class DialogueCondition {
     constructor(condition: string) {
         this.conditions = [];
         condition.split("&").forEach(element => {
-            if (element.trim() != 'default') {
+            if (element.trim() !== 'default' && element.trim() !== '') {
                 this.conditions.push(new DialogueSubCondition(element.trim()));
             }
         });
@@ -57,7 +58,7 @@ export class DialogueExchange {
         this.condition = new DialogueCondition(parts[0]);
         this.lines = [];
         parts[1].split("{[line]}").forEach(element => {
-            this.lines.push(new DialogueLine(element));
+            this.lines.push(new DialogueLine(element, false));
         });
         this.expanded = true;
     }
@@ -86,18 +87,30 @@ export class DialogueLine {
     public dialogue: FormControl;
     public useRightSide: FormControl;
     public flags: StateFlag[];
+    public id: string;
+    public useManualSelectionForBranches: FormControl;
+    public branches: DialogueBranch[];
 
-    constructor(setupString: string) {
+    constructor(setupString: string, useNewId: boolean) {
         let parts = setupString.split("{[text]}");
-        let speakerPicture = parts[0].trim();
-        let dialogueBox = parts[1].trim();
+        if (useNewId || !NodeIdService.idIsValid(parts[0].trim())) {
+            this.id = NodeIdService.getUniqueId();
+        } else {
+            this.id = parts[0].trim();
+            NodeIdService.register(this.id);
+        }
+        let speakerPicture = parts[1].trim();
+        let dialogueBox = parts[2].trim();
         let dialogue = '';
         let useRightSide = false;
-        if (parts.length > 2) {
-            dialogue = parts[2].trim();
-        } else {
-            dialogue = parts[1].trim();
-        }
+        dialogue = parts[3].trim();
+        this.useManualSelectionForBranches = new FormControl(parts[4].toUpperCase() === 'Y');
+        this.branches = [];
+        parts[5].split('{[branches]}').forEach((branch) => {
+            if (branch !== '') {
+                this.branches.push(new DialogueBranch(branch));
+            }
+        });
         if (speakerPicture.includes('[(rightside)]')) {
             speakerPicture = speakerPicture.replace('[(rightside)]', '');
             useRightSide = true;
@@ -114,7 +127,7 @@ export class DialogueLine {
     }
 
     toString() {
-        let retStr = "";
+        let retStr = this.id + "{[text]}";
         retStr += this.speakerPicture.value;
         retStr += this.useRightSide.value ? "[(rightside)]" : "";
         retStr += "{[text]}";
@@ -124,11 +137,20 @@ export class DialogueLine {
         for (let i = 0; i < this.flags.length; i++) {
             retStr += "[("+this.flags[i].toString()+")]";
         }
+        retStr += '{[text]}';
+        retStr += this.useManualSelectionForBranches.value ? 'Y' : 'N';
+        retStr += '{[text]}';
+        for (let i = 0; i < this.branches.length; i++) {
+            retStr += this.branches[i].toString();
+            if (i < this.branches.length - 1) {
+                retStr += "{[branches]}";
+            }
+        }
         return retStr;
     }
 
     duplicate() {
-        return new DialogueLine(this.toString());
+        return new DialogueLine(this.toString(), true);
     }
 }
 
@@ -152,22 +174,24 @@ export class StateFlag {
     }
 }
 
-export class DialogueChoice {
-    public options: DialogueOption[];
-
-    constructor(setupString: string) {
-        this.options = [];
-    }
-}
-
-export class DialogueOption {
+export class DialogueBranch {
+    public conditionText: FormControl;
     public condition: DialogueCondition;
-    public displayText: string;
-    public line: DialogueLine;
+    public nextLine: FormControl;
 
     constructor(setupString: string) {
-        this.condition = new DialogueCondition('');
-        this.displayText = '';
-        this.line = new DialogueLine('');
+        let parts = setupString.split("{[branch]}");
+        this.conditionText = new FormControl(parts[0]);
+        this.condition = new DialogueCondition(parts[1]);
+        this.nextLine = new FormControl(parts[2]);
+    }
+
+    toString() {
+        let retStr = this.conditionText.value;
+        retStr += '{[branch]}';
+        retStr += this.condition.toString();
+        retStr += '{[branch]}';
+        retStr += this.nextLine.value;
+        return retStr;
     }
 }

@@ -1,1 +1,11 @@
-<p>file-upload works!</p>
+<div class="file-upload-menu-container">
+    <div class="title center">Glumion Dialogue Portal</div>
+    <div>Welcome to the Gravitas Dialogue Portal. To get started, upload an existing dialogue file or create a new file.</div>
+    <div class="main-menu-buttons">
+        <label for="file-upload" class="btn btn-rect custom-file-upload">
+            Upload a file
+        </label>
+        <input id="file-upload" type="file" accept=".txt" (change)="state.parseFileUpload($event)"/>
+        <button class="btn btn-rect site-button" (click)="state.createNewDialogue()">Create new</button>
+    </div>
+</div>

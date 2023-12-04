@@ -32,6 +32,14 @@
     margin-right: 15px;
 }
 
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
 .ml-15 {
     margin-left: 15px;
 }
@@ -40,6 +48,20 @@
     margin-left: 10px;
 }
 
+.mr-10 {
+    margin-right: 10px;
+}
+
 .mv-15 {
     margin: 15px 0;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.error-msg {
+    font-size: 15px;
+    font-style: italic;
+    color: darkred;
 }

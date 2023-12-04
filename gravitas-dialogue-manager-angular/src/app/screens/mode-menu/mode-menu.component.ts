@@ -2,12 +2,11 @@ import { Component } from '@angular/core';
 import { DialogueFileService } from 'src/app/shared/dialogue-file.service';
 
 @Component({
-  selector: 'app-file-upload',
-  templateUrl: './file-upload.component.html',
-  styleUrls: ['./file-upload.component.css']
+  selector: 'app-mode-menu',
+  templateUrl: './mode-menu.component.html',
+  styleUrls: ['./mode-menu.component.css']
 })
-export class FileUploadComponent {
-
+export class ModeMenuComponent {
   constructor(
     public state: DialogueFileService
   ) {}

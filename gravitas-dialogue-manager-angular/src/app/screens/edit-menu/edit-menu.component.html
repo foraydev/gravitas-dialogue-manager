@@ -7,6 +7,9 @@
     <button class="btn btn-rect center" [ngStyle]="{'margin-top': '15px'}" (click)="state.exportDialogueFile()">
         Export
     </button>
-    <app-dialogue-exchange *ngFor="let exchange of state.conversations" [ngStyle]="{'margin': '15px 0'}"></app-dialogue-exchange>
-    <button (click)="state.addConversation()" class="btn btn-square center" [ngStyle]="{'margin-top': '15px'}">+</button>
+    <div *ngIf="state.errorMessage !== 'no-error'" class="mt-10 center error-msg">
+        {{state.errorMessage}}
+    </div>
+    <app-dialogue-exchange *ngFor="let exchange of state.conversations" [ngStyle]="{'margin': '15px 0'}" [conversation]="exchange"></app-dialogue-exchange>
+    <button (click)="state.addConversation()" class="btn btn-rect center" [ngStyle]="{'margin-top': '15px'}">+</button>
 </div>

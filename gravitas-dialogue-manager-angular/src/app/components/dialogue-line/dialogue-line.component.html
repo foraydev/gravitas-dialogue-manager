@@ -1,4 +1,7 @@
 <div class="dialogue-line-container">
+    <div class="line-id">
+        ID: {{line.id}}
+    </div>
     <div class="rowflex">
         <div class="mr-15">Speaker Picture: </div>
         <input type="text" [formControl]="line.speakerPicture">
@@ -21,9 +24,24 @@
         <button class="btn btn-square ml-10" (click)="state.addStateFlag(line)">+</button>
     </div>
     <div class="rowflex">
+        <div class="mr-15">Allow player to choose option:</div>
+        <input type="checkbox" [formControl]="line.useManualSelectionForBranches">
+    </div>
+    <div class="dialogue-branches-container mb-10" [ngClass]="branchContainerClass()">
+        <div class="branches-header">Dialogue Branches:</div>
+        <div class="rowflex branch-container">
+            <app-dialogue-branch class="mr-15" *ngFor="let branch of line.branches" [line]="line" [branch]="branch"></app-dialogue-branch>
+            <button class="btn btn-square" (click)="state.addDialogueBranch(line)">+</button>
+        </div>
+    </div>
+    <div *ngIf="validation.lineErrorMessage(line) !== ''" class="error-msg">
+        {{validation.lineErrorMessage(line)}}
+    </div>
+    <div class="rowflex">
         <button class="btn btn-rect ml-10" [disabled]="moveUpDisabled()" (click)="state.moveLineUp(conversation, line)">Move Up</button>
         <button class="btn btn-rect ml-10" [disabled]="moveDownDisabled()" (click)="state.moveLineDown(conversation, line)">Move Down</button>
         <button class="btn btn-rect ml-10" (click)="state.duplicateLine(conversation, line)">Duplicate</button>
         <button class="btn btn-rect ml-10" (click)="state.removeLine(conversation, line)">Delete</button>
     </div>
+
 </div>

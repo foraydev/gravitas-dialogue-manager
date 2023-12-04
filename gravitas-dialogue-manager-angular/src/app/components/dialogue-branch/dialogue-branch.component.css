@@ -1,0 +1,42 @@
+.dialogue-branch-container {
+    background-color: gray;
+    border: solid 2px black;
+    border-radius: 5px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.option-text {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.condition-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.next-line {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.id-input {
+    width: 35px;
+    text-align: center;
+}
+
+.remove-branch {
+    float: right;
+}

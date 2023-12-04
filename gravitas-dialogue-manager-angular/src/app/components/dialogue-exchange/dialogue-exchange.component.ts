@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { DialogueFileService } from 'src/app/shared/dialogue-file.service';
 import { DialogueExchange } from 'src/app/shared/shared-classes';
 import { NEW_CONVERSATION, NO_CONDITIONS } from 'src/app/shared/shared-constants';
+import { ValidationService } from 'src/app/shared/validation.service';
 
 @Component({
   selector: 'app-dialogue-exchange',
@@ -17,7 +18,8 @@ export class DialogueExchangeComponent {
   public noConditions = NO_CONDITIONS;
 
   constructor(
-    public state: DialogueFileService
+    public state: DialogueFileService,
+    public validation: ValidationService
   ) {
     this.index = state.conversations.findIndex((value) => { return value.toString() === this.conversation.toString(); }) + 1;
   }

@@ -15,7 +15,7 @@ export class StateFlagComponent {
   public flag: StateFlag = new StateFlag('');
 
   @Input()
-  public line: DialogueLine = new DialogueLine(NEW_LINE);
+  public line: DialogueLine = new DialogueLine(NEW_LINE, false);
 
   constructor(
     public state: DialogueFileService

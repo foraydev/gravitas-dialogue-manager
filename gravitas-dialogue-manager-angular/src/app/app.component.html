@@ -1,6 +1,9 @@
 <div *ngIf="state.currentMenu === 'upload'">
     <app-file-upload></app-file-upload>
 </div>
+<div *ngIf="state.currentMenu === 'mode'">
+    <app-mode-menu></app-mode-menu>
+</div>
 <div *ngIf="state.currentMenu === 'translate'">
     <app-translate-menu></app-translate-menu>
 </div>
