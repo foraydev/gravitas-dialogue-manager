@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DialogueBranch, DialogueCondition, DialogueExchange, DialogueLine, DialogueSubCondition, StateFlag } from './shared-classes';
+import { DialogueBranch, DialogueCondition, DialogueExchange, DialogueLine, StateFlag } from './shared-classes';
 import { NEW_BRANCH, NEW_CONVERSATION, NEW_LINE } from './shared-constants';
 import { NodeIdService } from './node-id-service';
 import { DialogueFileService } from './dialogue-file.service';

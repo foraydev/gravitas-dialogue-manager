@@ -1,50 +1,16 @@
 import { FormControl } from "@angular/forms";
 import { NodeIdService } from "./node-id-service";
+import { DialogueBranchParseable, DialogueConditionParseable, DialogueExchangeParseable, DialogueLineParseable, StateFlagParseable } from "./shared-classes-parsing";
 
 export class DialogueCondition {
-    public conditions: DialogueSubCondition[];
+    public conditions: StateFlag[];
 
-    constructor(condition: string) {
-        this.conditions = [];
-        condition.split("&").forEach(element => {
-            if (element.trim() !== 'default' && element.trim() !== '') {
-                this.conditions.push(new DialogueSubCondition(element.trim()));
-            }
-        });
+    constructor(cond: DialogueConditionParseable) {
+        this.conditions = cond.conditions.map(c => c.toStandard());
     }
 
-    toString() {
-        if (this.conditions.length == 0) {
-            return 'default';
-        }
-        let retStr = "";
-        for (let i = 0; i < this.conditions.length; i++) {
-            retStr += this.conditions[i].toString();
-            if (i < this.conditions.length - 1) {
-                retStr += "&";
-            }
-        }
-        return retStr;
-    }
-}
-
-export class DialogueSubCondition {
-    public variable: FormControl;
-    public targetValue: FormControl;
-
-    constructor(condition: string) {
-        let variable = condition;
-        let targetValue = true;
-        if (condition[0] == '!') {
-            variable = condition.substring(1);
-            targetValue = false;
-        }
-        this.variable = new FormControl(variable);
-        this.targetValue = new FormControl(targetValue);
-    }
-
-    toString() {
-        return (this.targetValue.value ? "" : "!") + this.variable.value;
+    toParseable(): DialogueConditionParseable{
+        return new DialogueConditionParseable(this);
     }
 }
 
@@ -53,31 +19,18 @@ export class DialogueExchange {
     public lines: DialogueLine[];
     public expanded: boolean;
 
-    constructor(setupString: string) {
-        let parts = setupString.split("{[exchange]}");
-        this.condition = new DialogueCondition(parts[0]);
-        this.lines = [];
-        parts[1].split("{[line]}").forEach(element => {
-            this.lines.push(new DialogueLine(element, false));
-        });
+    constructor(exc: DialogueExchangeParseable) {
+        this.condition = exc.condition.toStandard();
+        this.lines = exc.lines.map(l => l.toStandard());
         this.expanded = true;
     }
 
-    toString() {
-        let retStr = "";
-        retStr += this.condition.toString();
-        retStr += "{[exchange]}";
-        for (let i = 0; i < this.lines.length; i++) {
-            retStr += this.lines[i].toString();
-            if (i < this.lines.length - 1) {
-                retStr += "{[line]}";
-            }
-        }
-        return retStr;
+    toParseable(): DialogueExchangeParseable {
+        return new DialogueExchangeParseable(this);
     }
 
     duplicate() {
-        return new DialogueExchange(this.toString());
+        return new DialogueExchange(this.toParseable());
     }
 }
 
@@ -91,107 +44,53 @@ export class DialogueLine {
     public useManualSelectionForBranches: FormControl;
     public branches: DialogueBranch[];
 
-    constructor(setupString: string, useNewId: boolean) {
-        let parts = setupString.split("{[text]}");
-        if (useNewId || !NodeIdService.idIsValid(parts[0].trim())) {
-            this.id = NodeIdService.getUniqueId();
-        } else {
-            this.id = parts[0].trim();
-            NodeIdService.register(this.id);
-        }
-        let speakerPicture = parts[1].trim();
-        let dialogueBox = parts[2].trim();
-        let dialogue = '';
-        let useRightSide = false;
-        dialogue = parts[3].trim();
-        this.useManualSelectionForBranches = new FormControl(parts[4].toUpperCase() === 'Y');
-        this.branches = [];
-        parts[5].split('{[branches]}').forEach((branch) => {
-            if (branch !== '') {
-                this.branches.push(new DialogueBranch(branch));
-            }
-        });
-        if (speakerPicture.includes('[(rightside)]')) {
-            speakerPicture = speakerPicture.replace('[(rightside)]', '');
-            useRightSide = true;
-        }
-        this.flags = [];
-        dialogue.match(/\[\([!_\-\w]+\)\]/)?.forEach(element => {
-            this.flags.push(new StateFlag(element));
-            dialogue = dialogue.replace(element, "");
-        });
-        this.speakerPicture = new FormControl(speakerPicture);
-        this.dialogueBox = new FormControl(dialogueBox);
-        this.dialogue = new FormControl(dialogue);
-        this.useRightSide = new FormControl(useRightSide);
+    constructor(line: DialogueLineParseable) {
+        this.speakerPicture = new FormControl(line.speakerPicture);
+        this.dialogueBox = new FormControl(line.dialogueBox);
+        this.dialogue = new FormControl(line.dialogue);
+        this.useRightSide = new FormControl(line.useRightSide);
+        this.flags = line.flags.map(f => f.toStandard());
+        this.id = line.id === 'NULL' ? NodeIdService.getUniqueId() : line.id;
+        this.useManualSelectionForBranches = new FormControl(line.useManualSelectionForBranches);
+        this.branches = line.branches.map(b => b.toStandard());
     }
 
-    toString() {
-        let retStr = this.id + "{[text]}";
-        retStr += this.speakerPicture.value;
-        retStr += this.useRightSide.value ? "[(rightside)]" : "";
-        retStr += "{[text]}";
-        retStr += this.dialogueBox.value;
-        retStr += "{[text]}";
-        retStr += this.dialogue.value;
-        for (let i = 0; i < this.flags.length; i++) {
-            retStr += "[("+this.flags[i].toString()+")]";
-        }
-        retStr += '{[text]}';
-        retStr += this.useManualSelectionForBranches.value ? 'Y' : 'N';
-        retStr += '{[text]}';
-        for (let i = 0; i < this.branches.length; i++) {
-            retStr += this.branches[i].toString();
-            if (i < this.branches.length - 1) {
-                retStr += "{[branches]}";
-            }
-        }
-        return retStr;
+
+    toParseable(): DialogueLineParseable {
+        return new DialogueLineParseable(this);
     }
 
     duplicate() {
-        return new DialogueLine(this.toString(), true);
+        return new DialogueLine(this.toParseable());
     }
 }
 
 export class StateFlag {
-    public name: FormControl;
+    public flag: FormControl;
     public value: FormControl;
 
-    constructor(setupString: string) {
-        let name = setupString.replace("[(", "").replace(")]", "");
-        let value = true;
-        if (name[0] == "!") {
-            name = name.substring(1);
-            value = false;
-        }
-        this.name = new FormControl(name);
-        this.value = new FormControl(value);
+    constructor(f: StateFlagParseable) {
+        this.flag = new FormControl(f.flag);
+        this.value = new FormControl(f.value);
     }
 
-    toString() {
-        return (this.value.value ? "" : "!") + this.name.value;
+    toParseable() {
+        return new StateFlagParseable(this);
     }
 }
 
 export class DialogueBranch {
-    public conditionText: FormControl;
+    public optionText: FormControl;
     public condition: DialogueCondition;
     public nextLine: FormControl;
 
-    constructor(setupString: string) {
-        let parts = setupString.split("{[branch]}");
-        this.conditionText = new FormControl(parts[0]);
-        this.condition = new DialogueCondition(parts[1]);
-        this.nextLine = new FormControl(parts[2]);
+    constructor(b: DialogueBranchParseable) {
+        this.optionText = new FormControl(b.optionText);
+        this.condition = new DialogueCondition(b.condition);
+        this.nextLine = new FormControl(b.nextLine);
     }
 
-    toString() {
-        let retStr = this.conditionText.value;
-        retStr += '{[branch]}';
-        retStr += this.condition.toString();
-        retStr += '{[branch]}';
-        retStr += this.nextLine.value;
-        return retStr;
+    toParseable(): DialogueBranchParseable {
+        return new DialogueBranchParseable(this);
     }
 }

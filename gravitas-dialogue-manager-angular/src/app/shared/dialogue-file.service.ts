@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DialogueBranch, DialogueCondition, DialogueExchange, DialogueLine, DialogueSubCondition, StateFlag } from './shared-classes';
-import { NEW_BRANCH, NEW_CONVERSATION, NEW_LINE } from './shared-constants';
+import { DialogueBranch, DialogueCondition, DialogueExchange, DialogueLine, StateFlag } from './shared-classes';
+import { NEW_BRANCH, NEW_CONVERSATION, NEW_FLAG, NEW_LINE } from './shared-constants';
 import { NodeIdService } from './node-id-service';
 import { ValidationService } from './validation.service';
+import { JsonDecoder } from 'ts.data.json';
+import { DialogueBranchParseable, DialogueExchangeParseable, DialogueLineParseable, StateFlagParseable } from './shared-classes-parsing';
+import { DialogueLineComponent } from '../components/dialogue-line/dialogue-line.component';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +16,7 @@ export class DialogueFileService {
   currentMenu = "upload";
   errorMessage = '';
   conversations: DialogueExchange[] = [
-    new DialogueExchange(NEW_CONVERSATION.replace('{ID}', NodeIdService.getUniqueId()))
+    new DialogueExchange(NEW_CONVERSATION)
   ];
 
   characterName: FormControl = new FormControl('');
@@ -34,9 +37,62 @@ export class DialogueFileService {
   public createNewDialogue() {
     NodeIdService.reset();
     this.conversations = [];
-    this.conversations.push(new DialogueExchange(NEW_CONVERSATION.replace('{ID}', NodeIdService.getUniqueId())));
+    this.conversations.push(new DialogueExchange(NEW_CONVERSATION));
     this.characterName.patchValue("New Character");
     this.currentMenu = 'edit';
+  }
+
+  correctParsedExchanges(conversations: DialogueExchangeParseable[]) {
+    conversations.forEach((conversation: DialogueExchangeParseable) => {
+      if (!Object.hasOwn(conversation, 'toStandard')) {
+        conversation = {
+          ...conversation,
+          toStandard: function (): DialogueExchange {
+            return new DialogueExchange(this);
+          }
+        }
+      };
+      conversation.condition.conditions.forEach((flag: StateFlagParseable) => {
+        if (!Object.hasOwn(flag, 'toStandard')) {
+          flag = {
+            ...flag,
+            toStandard: function (): StateFlag {
+              return new StateFlag(this);
+            }
+          }
+        };
+      });
+      conversation.lines.forEach((line: DialogueLineParseable) => {
+        if (!Object.hasOwn(line, 'toStandard')) {
+          line = {
+            ...line,
+            toStandard: function (): DialogueLine {
+              return new DialogueLine(this);
+            }
+          }
+        };
+        line.branches.forEach((branch: DialogueBranchParseable) => {
+          if (!Object.hasOwn(branch, 'toStandard')) {
+            branch = {
+              ...branch,
+              toStandard: function (): DialogueBranch {
+                return new DialogueBranch(this);
+              }
+            }
+          };
+          branch.condition.conditions.forEach((flag: StateFlagParseable) => {
+            if (!Object.hasOwn(flag, 'toStandard')) {
+              flag = {
+                ...flag,
+                toStandard: function (): StateFlag {
+                  return new StateFlag(this);
+                }
+              }
+            };
+          });
+        });
+      });
+    });
   }
 
   public parseFileUpload(event: any) {
@@ -47,9 +103,10 @@ export class DialogueFileService {
 
     reader.addEventListener("load", () => {
       if (reader.result && typeof reader.result === 'string') {
-        reader.result.replace("\n", "").split("{[interaction]}").forEach(element => {
-          this.conversations.push(new DialogueExchange(element));
-        });
+        let temp: DialogueExchangeParseable[] = JSON.parse(reader.result);
+        this.correctParsedExchanges(temp);
+        console.log(temp);
+        this.conversations = temp.map(c => c.toStandard());
       }
     }, false);
 
@@ -75,14 +132,7 @@ export class DialogueFileService {
   }
 
   private formatForExport() {
-    let retStr = "";
-    for (let exchange = 0; exchange < this.conversations.length; exchange++) {
-        retStr += this.conversations[exchange].toString();
-        if (exchange < this.conversations.length - 1) {
-            retStr += "{[interaction]}";
-        }
-    }
-    return retStr;
+    return JSON.stringify(this.conversations.map(c => c.toParseable()));
   }
 
   private formatDialogueForTranslation(dialogueLine: string) {
@@ -110,7 +160,7 @@ export class DialogueFileService {
 
   // CONVERSATION OPERATIONS
   public addConversation() {
-    this.conversations.push(new DialogueExchange(NEW_CONVERSATION.replace('{CHARACTER}', this.characterName.value.toLowerCase()).replace('{ID}', NodeIdService.getUniqueId())));
+    this.conversations.push(new DialogueExchange(NEW_CONVERSATION));
   }
 
   public removeConversation(conversation: DialogueExchange) {
@@ -136,7 +186,7 @@ export class DialogueFileService {
 
   public duplicateConversation(conversation: DialogueExchange) {
     let indexOfCurrent = this.conversations.findIndex((value) => {return value.toString() === conversation.toString(); });
-    this.conversations.splice(indexOfCurrent, 0, conversation.duplicate());
+    this.conversations.splice(indexOfCurrent+1, 0, conversation.duplicate());
   }
 
   public setExpanded(conversation: DialogueExchange, value: boolean) {
@@ -146,7 +196,7 @@ export class DialogueFileService {
   // LINE OPTIONS
   public addLine(conversation: DialogueExchange) {
     let oldLastLine = conversation.lines[conversation.lines.length - 1];
-    let newLen = conversation.lines.push(new DialogueLine(NEW_LINE.replace('{CHARACTER}', this.characterName.value.toLowerCase()), true));
+    let newLen = conversation.lines.push(new DialogueLine(NEW_LINE));
     let newLine = conversation.lines[newLen - 1];
     if (oldLastLine.branches.length === 0) {
       this.addDialogueBranch(oldLastLine);
@@ -185,7 +235,7 @@ export class DialogueFileService {
 
   // STATE FLAG OPTIONS
   public addStateFlag(line: DialogueLine) {
-    line.flags.push(new StateFlag('New Flag'));
+    line.flags.push(new StateFlag(NEW_FLAG));
   }
 
   public removeStateFlag(line: DialogueLine, flag: StateFlag) {
@@ -195,17 +245,17 @@ export class DialogueFileService {
 
   // DIALOGUE CONDITION OPTIONS
   public addDialogueCondition(condition: DialogueCondition) {
-    condition.conditions.push(new DialogueSubCondition('New Flag'));
+    condition.conditions.push(new StateFlag(NEW_FLAG));
   }
 
-  public removeDialogueCondition(condition: DialogueCondition, flag: DialogueSubCondition) {
+  public removeDialogueCondition(condition: DialogueCondition, flag: StateFlag) {
     let indexToRemove = condition.conditions.findIndex((value) => {value.toString() === flag.toString()});
     condition.conditions.splice(indexToRemove, 1);
   }
 
   // DIALOGUE BRANCH OPTIONS
   public addDialogueBranch(line: DialogueLine) {
-    line.branches.push(new DialogueBranch(NEW_BRANCH.replace('{ID}', '')));
+    line.branches.push(new DialogueBranch(NEW_BRANCH));
   }
 
   public removeDialogueBranch(line: DialogueLine, branch: DialogueBranch) {

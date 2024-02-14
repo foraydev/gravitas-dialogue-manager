@@ -1,7 +1,7 @@
 <div class="dialogue-branch-container">
     <div *ngIf="line.useManualSelectionForBranches.value" class="rowflex mb-10 option-text">
         <div class="mr-15">Option Text:</div>
-        <input type="text" [formControl]="branch.conditionText">
+        <input type="text" [formControl]="branch.optionText">
     </div>
     <div class="condition-box">
         <div class="italic" *ngIf="branch.condition.conditions.length === 0">(Default branch)</div>

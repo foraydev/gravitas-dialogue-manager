@@ -3,15 +3,26 @@ import { DialogueFileService } from 'src/app/shared/dialogue-file.service';
 import { DialogueExchange, DialogueLine } from 'src/app/shared/shared-classes';
 import { DIALOGUE_BUBBLE_OPTIONS, NEW_CONVERSATION, NEW_LINE, NO_FLAGS } from 'src/app/shared/shared-constants';
 import { ValidationService } from 'src/app/shared/validation.service';
+import { DialogueBranchComponent } from '../dialogue-branch/dialogue-branch.component';
+import { StateFlagComponent } from '../state-flag/state-flag.component';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dialogue-line',
   templateUrl: './dialogue-line.component.html',
-  styleUrls: ['./dialogue-line.component.css']
+  styleUrls: ['./dialogue-line.component.css'],
+  standalone: true,
+  imports: [
+    DialogueBranchComponent,
+    StateFlagComponent,
+    CommonModule,
+    ReactiveFormsModule
+  ]
 })
 export class DialogueLineComponent {
   @Input()
-  public line: DialogueLine = new DialogueLine(NEW_LINE, false);
+  public line: DialogueLine = new DialogueLine(NEW_LINE);
 
   @Input()
   public conversation: DialogueExchange = new DialogueExchange(NEW_CONVERSATION);

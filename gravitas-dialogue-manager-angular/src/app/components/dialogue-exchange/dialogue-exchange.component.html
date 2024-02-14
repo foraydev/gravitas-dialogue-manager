@@ -10,7 +10,7 @@
     <div *ngIf="conversation.expanded">
         <div class="rowflex dialogue-condition-wrapper">
             <div>{{conversation.condition.conditions.length > 0 ? 'Conditions: ' : noConditions}}</div>
-            <app-dialogue-subcondition *ngFor="let condition of conversation.condition.conditions" class="ml-15" [condition]="conversation.condition"></app-dialogue-subcondition>
+            <app-dialogue-subcondition *ngFor="let condition of conversation.condition.conditions" class="ml-15" [condition]="conversation.condition" [subcondition]="condition"></app-dialogue-subcondition>
             <button class="ml-15 btn btn-square" (click)="state.addDialogueCondition(conversation.condition)">+</button>
         </div>
         <app-dialogue-line *ngFor="let line of conversation.lines" [line]="line" [conversation]="conversation"></app-dialogue-line>

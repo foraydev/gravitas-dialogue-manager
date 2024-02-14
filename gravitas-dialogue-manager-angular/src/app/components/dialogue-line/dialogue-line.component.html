@@ -13,7 +13,7 @@
     <div class="rowflex">
         <div class="mr-15">Dialogue Bubble Type: </div>
         <select [formControl]="line.dialogueBox">
-            <option *ngFor="let option of dialogueOptions" [ngValue]="option.toLowerCase()">{{option}}</option>
+            <option *ngFor="let option of dialogueOptions" (value)="option.toLowerCase()">{{option}}</option>
         </select>
     </div>
     <div class="mr-15">Dialogue: </div>

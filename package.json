@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "ts.data.json": "^2.2.0"
+  }
+}

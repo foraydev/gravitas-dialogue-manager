@@ -15,24 +15,19 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ModeMenuComponent } from './screens/mode-menu/mode-menu.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    EditMenuComponent,
-    FileUploadComponent,
-    TranslateMenuComponent,
-    DialogueExchangeComponent,
-    DialogueLineComponent,
-    DialogueConditionComponent,
-    DialogueSubconditionComponent,
-    DialogueBranchComponent,
-    StateFlagComponent,
-    ModeMenuComponent
-  ],
-  imports: [
-    BrowserModule,
-    ReactiveFormsModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        FileUploadComponent,
+        TranslateMenuComponent,
+        DialogueConditionComponent,
+        ModeMenuComponent
+    ],
+    providers: [],
+    bootstrap: [AppComponent],
+    imports: [
+        BrowserModule,
+        ReactiveFormsModule,
+        EditMenuComponent
+    ]
 })
 export class AppModule { }
