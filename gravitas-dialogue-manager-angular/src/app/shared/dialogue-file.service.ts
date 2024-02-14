@@ -5,7 +5,7 @@ import { NEW_BRANCH, NEW_CONVERSATION, NEW_FLAG, NEW_LINE } from './shared-const
 import { NodeIdService } from './node-id-service';
 import { ValidationService } from './validation.service';
 import { JsonDecoder } from 'ts.data.json';
-import { DialogueBranchParseable, DialogueExchangeParseable, DialogueLineParseable, StateFlagParseable } from './shared-classes-parsing';
+import { DialogueBranchParseable, DialogueConditionParseable, DialogueExchangeParseable, DialogueLineParseable, StateFlagParseable } from './shared-classes-parsing';
 import { DialogueLineComponent } from '../components/dialogue-line/dialogue-line.component';
 
 @Injectable({
@@ -42,71 +42,105 @@ export class DialogueFileService {
     this.currentMenu = 'edit';
   }
 
-  correctParsedExchanges(conversations: DialogueExchangeParseable[]) {
+  correctParsedExchanges(conversations: DialogueExchangeParseable[]): DialogueExchangeParseable[] {
+    let retVal: DialogueExchangeParseable[] = [];
     conversations.forEach((conversation: DialogueExchangeParseable) => {
-      if (!Object.hasOwn(conversation, 'toStandard')) {
-        conversation = {
-          ...conversation,
-          toStandard: function (): DialogueExchange {
-            return new DialogueExchange(this);
-          }
+      let correctedExchange: DialogueExchangeParseable = {
+        ...NEW_CONVERSATION,
+        ...conversation,
+        toStandard: function (): DialogueExchange {
+          return new DialogueExchange(this);
         }
       };
+      let correctedCondition: DialogueConditionParseable = {
+        ...conversation.condition,
+        toStandard: function (): DialogueCondition {
+          return new DialogueCondition(this);
+        }
+      };
+      let correctedConditions: StateFlagParseable[] = [];
+      let correctedLines: DialogueLineParseable[] = [];
       conversation.condition.conditions.forEach((flag: StateFlagParseable) => {
-        if (!Object.hasOwn(flag, 'toStandard')) {
-          flag = {
+        let correctedFlag: StateFlagParseable = {
+          ...NEW_FLAG,
+          ...flag,
+          toStandard: function (): StateFlag {
+            return new StateFlag(this);
+          }
+        };
+        correctedConditions.push(correctedFlag);
+      });
+      correctedCondition.conditions = correctedConditions;
+      correctedExchange.condition = correctedCondition;
+      conversation.lines.forEach((line: DialogueLineParseable) => {
+        let correctedLine: DialogueLineParseable = {
+          ...NEW_LINE,
+          ...line,
+          toStandard: function (): DialogueLine {
+            return new DialogueLine(this);
+          }
+        };
+        let correctedFlags: StateFlagParseable[] = [];
+        line.flags.forEach((flag: StateFlagParseable) => {
+          let correctedFlag: StateFlagParseable = {
+            ...NEW_FLAG,
             ...flag,
             toStandard: function (): StateFlag {
               return new StateFlag(this);
             }
-          }
-        };
-      });
-      conversation.lines.forEach((line: DialogueLineParseable) => {
-        if (!Object.hasOwn(line, 'toStandard')) {
-          line = {
-            ...line,
-            toStandard: function (): DialogueLine {
-              return new DialogueLine(this);
-            }
-          }
-        };
+          };
+          correctedFlags.push(correctedFlag);
+        });
+        correctedLine.flags = correctedFlags;
+        let correctedBranches: DialogueBranchParseable[] = [];
         line.branches.forEach((branch: DialogueBranchParseable) => {
-          if (!Object.hasOwn(branch, 'toStandard')) {
-            branch = {
-              ...branch,
-              toStandard: function (): DialogueBranch {
-                return new DialogueBranch(this);
-              }
+          let correctedBranch: DialogueBranchParseable = {
+            ...NEW_BRANCH,
+            ...branch,
+            toStandard: function (): DialogueBranch {
+              return new DialogueBranch(this);
             }
           };
+          let correctedBranchCondition: DialogueConditionParseable = {
+            ...conversation.condition,
+            toStandard: function (): DialogueCondition {
+              return new DialogueCondition(this);
+            }
+          };
+          let correctedBranchConditions: StateFlagParseable[] = [];
           branch.condition.conditions.forEach((flag: StateFlagParseable) => {
-            if (!Object.hasOwn(flag, 'toStandard')) {
-              flag = {
-                ...flag,
-                toStandard: function (): StateFlag {
-                  return new StateFlag(this);
-                }
+            let correctedBranchCondition: StateFlagParseable = {
+              ...NEW_FLAG,
+              ...flag,
+              toStandard: function (): StateFlag {
+                return new StateFlag(this);
               }
             };
+            correctedBranchConditions.push(correctedBranchCondition);
           });
+          correctedBranchCondition.conditions = correctedBranchConditions;
+          correctedBranch.condition = correctedBranchCondition;
+          correctedBranches.push(correctedBranch);
         });
+        correctedLine.branches = correctedBranches;
+        correctedLines.push(correctedLine);
       });
+      correctedExchange.lines = correctedLines;
+      retVal.push(correctedExchange);
     });
+    return retVal;
   }
 
   public parseFileUpload(event: any) {
     this.conversations = [];
     let file = event.target.files[0];
-    console.log(event);
     const reader = new FileReader();
 
     reader.addEventListener("load", () => {
       if (reader.result && typeof reader.result === 'string') {
         let temp: DialogueExchangeParseable[] = JSON.parse(reader.result);
-        this.correctParsedExchanges(temp);
-        console.log(temp);
-        this.conversations = temp.map(c => c.toStandard());
+        let temp2: DialogueExchangeParseable[] = this.correctParsedExchanges(temp);
+        this.conversations = temp2.map(c => c.toStandard());
       }
     }, false);
 
