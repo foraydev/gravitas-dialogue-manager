@@ -70,8 +70,8 @@ export class StateFlag {
     public value: FormControl;
 
     constructor(f: StateFlagParseable) {
-        this.flag = new FormControl(f.flag);
-        this.value = new FormControl(f.value);
+        this.flag = new FormControl(f.sceneFlag);
+        this.value = new FormControl(f.activeValue);
     }
 
     toParseable() {

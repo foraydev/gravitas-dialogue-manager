@@ -55,12 +55,12 @@ export class DialogueLineParseable {
 }
 
 export class StateFlagParseable {
-    public flag: string;
-    public value: boolean;
+    public sceneFlag: string;
+    public activeValue: boolean;
 
     constructor(f: StateFlag) {
-        this.flag = f.flag.value;
-        this.value = f.value.value;
+        this.sceneFlag = f.flag.value;
+        this.activeValue = f.value.value;
     }
 
     toStandard(): StateFlag {

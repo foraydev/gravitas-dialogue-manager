@@ -43,8 +43,8 @@ export const NEW_CONVERSATION: DialogueExchangeParseable = {
     }
 };
 export const NEW_FLAG: StateFlagParseable = {
-    flag: "TestFlag",
-    value: true,
+    sceneFlag: "TestFlag",
+    activeValue: true,
     toStandard: function (): StateFlag {
         return new StateFlag(this);
     }
