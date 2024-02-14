@@ -1,0 +1,71 @@
+.dialogue-line-container {
+    background-color: #888;
+    padding: 10px;
+    text-align: left;
+    border: 2px solid black;
+    font-size: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.dialogue-textarea {
+    width: 250px;
+    height: 100px;
+}
+
+.dialogue-scene-flag-container {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 15px 0;
+    font-size: 20px;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+}
+
+.dialogue-textarea {
+    width: 250px;
+    height: 100px;
+}
+
+.line-id {
+    color: maroon;
+    font-size: 2em;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.branch-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.branches-header {
+    font-size: 20px;
+}
+
+.dialogue-branches-container {
+    padding: 15px;
+    border: solid 2px black;
+    border-radius: 5px;
+}
+
+.branch-container-end {
+    background-color: lightcoral;
+}
+
+.branch-container-normal {
+    background-color: skyblue;
+}
+
+.branch-container-branch {
+    background-color: lightgoldenrodyellow;
+}
+
+.branch-container-user-input {
+    background-color: violet;
+}

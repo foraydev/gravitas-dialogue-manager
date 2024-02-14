@@ -1,0 +1,20 @@
+.rowflex {
+    display: flex;
+    flex-direction: row;
+}
+
+.btn-square {
+    margin-left: 10px;
+    width: 30px;
+    border: solid 2px black;
+    height: 30px;
+    border-radius: 5px;
+}
+
+.btn-rect {
+    margin-left: 10px;
+    width: 100px;
+    border: solid 2px black;
+    height: 30px;
+    border-radius: 5px;
+}

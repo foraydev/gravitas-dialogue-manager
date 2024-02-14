@@ -1,0 +1,23 @@
+<div class="dialogue-branch-container">
+    <div *ngIf="line.useManualSelectionForBranches.value" class="rowflex mb-10 option-text">
+        <div class="mr-15">Option Text:</div>
+        <input type="text" [formControl]="branch.optionText">
+    </div>
+    <div class="condition-box">
+        <div class="italic" *ngIf="branch.condition.conditions.length === 0">(Default branch)</div>
+        <app-dialogue-subcondition class="mb-10" *ngFor="let condition of branch.condition.conditions" [condition]="branch.condition" [subcondition]="condition"></app-dialogue-subcondition>
+        <button class="btn btn-rect mt-10" (click)="state.addDialogueCondition(branch.condition)">Add Condition</button>
+    </div>
+    <div class="rowflex next-line">
+        <div class="rowflex">
+            <div class="mr-10">Next Line ID:</div>
+            <input class="id-input" type="text" [formControl]="branch.nextLine">
+        </div>
+        <div class="remove-branch">
+            <button (click)="state.removeDialogueBranch(line, branch)" class="btn btn-square">X</button>
+        </div>
+    </div>
+    <div *ngIf="validation.branchErrorMessage(branch, line, state.conversations) !== ''" class="error-msg">
+        {{validation.branchErrorMessage(branch, line, state.conversations)}}
+    </div>
+</div>

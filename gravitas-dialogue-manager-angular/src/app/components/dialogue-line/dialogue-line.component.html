@@ -1,0 +1,47 @@
+<div class="dialogue-line-container">
+    <div class="line-id">
+        ID: {{line.id}}
+    </div>
+    <div class="rowflex">
+        <div class="mr-15">Speaker Picture: </div>
+        <input type="text" [formControl]="line.speakerPicture">
+    </div>
+    <div class="rowflex">
+        <div class="mr-15">Use right side: </div>
+        <input type="checkbox" [formControl]="line.useRightSide">
+    </div>
+    <div class="rowflex">
+        <div class="mr-15">Dialogue Bubble Type: </div>
+        <select [formControl]="line.dialogueBox">
+            <option *ngFor="let option of dialogueOptions" (value)="option.toLowerCase()">{{option}}</option>
+        </select>
+    </div>
+    <div class="mr-15">Dialogue: </div>
+    <textarea class="dialogue-textarea" [formControl]="line.dialogue"></textarea>
+    <div class="dialogue-scene-flag-container rowflex">
+        <div>Scene Flags:</div>
+        <app-state-flag class="ml-15" *ngFor="let flag of line.flags" [flag]="flag" [line]="line"></app-state-flag>
+        <button class="btn btn-square ml-10" (click)="state.addStateFlag(line)">+</button>
+    </div>
+    <div class="rowflex">
+        <div class="mr-15">Allow player to choose option:</div>
+        <input type="checkbox" [formControl]="line.useManualSelectionForBranches">
+    </div>
+    <div class="dialogue-branches-container mb-10" [ngClass]="branchContainerClass()">
+        <div class="branches-header">Dialogue Branches:</div>
+        <div class="rowflex branch-container">
+            <app-dialogue-branch class="mr-15" *ngFor="let branch of line.branches" [line]="line" [branch]="branch"></app-dialogue-branch>
+            <button class="btn btn-square" (click)="state.addDialogueBranch(line)">+</button>
+        </div>
+    </div>
+    <div *ngIf="validation.lineErrorMessage(line) !== ''" class="error-msg">
+        {{validation.lineErrorMessage(line)}}
+    </div>
+    <div class="rowflex">
+        <button class="btn btn-rect ml-10" [disabled]="moveUpDisabled()" (click)="state.moveLineUp(conversation, line)">Move Up</button>
+        <button class="btn btn-rect ml-10" [disabled]="moveDownDisabled()" (click)="state.moveLineDown(conversation, line)">Move Down</button>
+        <button class="btn btn-rect ml-10" (click)="state.duplicateLine(conversation, line)">Duplicate</button>
+        <button class="btn btn-rect ml-10" (click)="state.removeLine(conversation, line)">Delete</button>
+    </div>
+
+</div>

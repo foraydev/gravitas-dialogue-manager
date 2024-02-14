@@ -1,0 +1,22 @@
+<div class="dialogue-exchange-container center">
+    <div class="rowflex">
+        <div class="dialogue-exchange-header">Conversation {{index}}: </div>
+        <button class="btn btn-rect ml-10" [disabled]="moveUpDisabled()" (click)="state.moveConversationUp(conversation)">Move Up</button>
+        <button class="btn btn-rect ml-10" [disabled]="moveDownDisabled()" (click)="state.moveConversationDown(conversation)">Move Down</button>
+        <button class="btn btn-rect ml-10" (click)="state.setExpanded(conversation, !conversation.expanded)">{{conversation.expanded ? 'Collapse' : 'Expand'}}</button>
+        <button class="btn btn-rect ml-10" (click)="state.duplicateConversation(conversation)">Duplicate</button>
+        <button class="btn btn-rect ml-10" (click)="state.removeConversation(conversation)">Delete</button>
+    </div>
+    <div *ngIf="conversation.expanded">
+        <div class="rowflex dialogue-condition-wrapper">
+            <div>{{conversation.condition.conditions.length > 0 ? 'Conditions: ' : noConditions}}</div>
+            <app-dialogue-subcondition *ngFor="let condition of conversation.condition.conditions" class="ml-15" [condition]="conversation.condition" [subcondition]="condition"></app-dialogue-subcondition>
+            <button class="ml-15 btn btn-square" (click)="state.addDialogueCondition(conversation.condition)">+</button>
+        </div>
+        <app-dialogue-line *ngFor="let line of conversation.lines" [line]="line" [conversation]="conversation"></app-dialogue-line>
+        <button class="btn btn-square" (click)="state.addLine(conversation)">+</button>
+    </div>
+    <div *ngIf="validation.exchangeErrorMessage(conversation) !== ''" class="error-msg">
+        {{validation.exchangeErrorMessage(conversation)}}
+    </div>
+</div>

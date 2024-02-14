@@ -1,0 +1,5 @@
+<div class="state-flag">
+    <input type="text" [formControl]="flag.flag">
+    <input type="checkbox" [formControl]="flag.value">
+    <button class="btn btn-square" (click)="state.removeStateFlag(line, flag)">X</button>
+</div>

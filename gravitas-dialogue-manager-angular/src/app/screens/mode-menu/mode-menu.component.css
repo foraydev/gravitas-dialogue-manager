@@ -1,0 +1,41 @@
+.mode-page {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 50px;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.title:hover {
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.mode-select-filename {
+    margin-bottom: 15px;
+}
+
+.site-button {
+    background-color: white;
+    border: 2px solid black;
+    padding: 10px 12px;
+    cursor: pointer;
+    width: 154px;
+    height: 54px;
+    line-height: 30px;
+    font-size: 1.3em;
+    border-radius: 10px;
+    margin-left: 20px;
+}
+
+.site-button:hover {
+    background: #ccc;
+    cursor: pointer;
+}
