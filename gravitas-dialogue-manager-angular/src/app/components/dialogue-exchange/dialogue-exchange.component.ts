@@ -22,22 +22,19 @@ export class DialogueExchangeComponent {
   @Input()
   public conversation: DialogueExchange = new DialogueExchange(NEW_CONVERSATION);
 
-  public index = 0;
-
   public noConditions = NO_CONDITIONS;
 
   constructor(
     public state: DialogueFileService,
     public validation: ValidationService
   ) {
-    this.index = state.conversations.findIndex((value) => { return value.toString() === this.conversation.toString(); }) + 1;
   }
 
   moveUpDisabled() {
-    return this.index <= 1;
+    return this.conversation.index <= 1;
   }
 
   moveDownDisabled() {
-    return this.index >= this.state.conversations.length;
+    return this.conversation.index >= this.state.conversations.length;
   }
 }
