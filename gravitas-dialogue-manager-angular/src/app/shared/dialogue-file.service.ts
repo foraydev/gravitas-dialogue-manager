@@ -158,6 +158,8 @@ export class DialogueFileService {
         let temp: DialogueExchangeParseable[] = JSON.parse(reader.result);
         let temp2: DialogueExchangeParseable[] = this.correctParsedExchanges(temp);
         this.conversations = temp2.map(c => c.toStandard());
+        // update the indeces for easy and accurate updates
+        this.reindex();
       }
     }, false);
 
@@ -199,6 +201,27 @@ export class DialogueFileService {
     this.currentMenu = menuName;
   }
 
+  private reindex() {
+    for (let c = 0; c < this.conversations.length; c++) {
+      this.conversations[c].index = c;
+      for (let cf = 0; cf < this.conversations[c].condition.conditions.length; cf++) {
+        this.conversations[c].condition.conditions[cf].index = cf;
+      }
+      for (let l = 0; l < this.conversations[c].lines.length; l++) {
+        this.conversations[c].lines[l].index = l;
+        for (let sf = 0; sf < this.conversations[c].lines[l].flags.length; sf++) {
+          this.conversations[c].lines[l].flags[sf].index = sf;
+        }
+        for (let b = 0; b < this.conversations[c].lines[l].branches.length; b++) {
+          this.conversations[c].lines[l].branches[b].index = b;
+          for (let bf = 0; bf < this.conversations[c].lines[l].branches[b].condition.conditions.length; bf++) {
+            this.conversations[c].lines[l].branches[b].condition.conditions[bf].index = bf;
+          }
+        }
+      }
+    }
+  }
+
   // validates that a given id will chain into a real dialogue entry (i.e. has not been deleted)
   public checkTargetIsValid(id: string) {
     for (let c = 0; c < this.conversations.length; c++) {
@@ -214,32 +237,37 @@ export class DialogueFileService {
     const exc = new DialogueExchange(NEW_CONVERSATION);
     exc.lines[0].speakerPicture.patchValue(exc.lines[0].speakerPicture.value.replace("{DEFAULT}", this.characterName.value));
     this.conversations.push(exc);
+    this.reindex();
   }
 
   public removeConversation(conversation: DialogueExchange) {
-    let indexToRemove = this.conversations.findIndex((value) => {return value.toString() === conversation.toString();});
-    this.conversations.splice(indexToRemove, 1);
+    let indexToRemove = conversation.index;
+    this.conversations.splice(conversation.index, 1);
+    this.reindex();
   }
 
   public moveConversationUp(conversation: DialogueExchange) {
-    let indexOfCurrent = this.conversations.findIndex((value) => {return value.toString() === conversation.toString();});
-    if (indexOfCurrent > 0) {
-      this.conversations.splice(indexOfCurrent, 1);
-      this.conversations.splice(indexOfCurrent-1, 0, conversation);
+    let i = conversation.index;
+    if (i > 0) {
+      this.conversations.splice(i, 1);
+      this.conversations.splice(i-1, 0, conversation);
     }
+    this.reindex();
   }
 
   public moveConversationDown(conversation: DialogueExchange) {
-    let indexOfCurrent = this.conversations.findIndex((value) => {value.toString() === conversation.toString(); });
-    if (indexOfCurrent < this.conversations.length - 1) {
-      this.conversations.splice(indexOfCurrent, 1);
-      this.conversations.splice(indexOfCurrent+1, 0, conversation);
+    let i = conversation.index;
+    if (i < this.conversations.length - 1) {
+      this.conversations.splice(i, 1);
+      this.conversations.splice(i+1, 0, conversation);
     }
+    this.reindex();
   }
 
   public duplicateConversation(conversation: DialogueExchange) {
-    let indexOfCurrent = this.conversations.findIndex((value) => {return value.toString() === conversation.toString(); });
-    this.conversations.splice(indexOfCurrent+1, 0, conversation.duplicate());
+    let i = conversation.index;
+    this.conversations.splice(i+1, 0, conversation.duplicate());
+    this.reindex();
   }
 
   public setExpanded(conversation: DialogueExchange, value: boolean) {
@@ -259,62 +287,73 @@ export class DialogueFileService {
     if (oldLastLine.branches.length === 1) {
       oldLastLine.branches[0].nextLine.patchValue(newLine.id);
     }
+    this.reindex();
   }
 
   public removeLine(conversation: DialogueExchange, line: DialogueLine) {
-    let indexToRemove = conversation.lines.findIndex((value) => {return value.id === line.id; });
+    let indexToRemove = line.index;
     NodeIdService.deregister(conversation.lines[indexToRemove].id);
     conversation.lines.splice(indexToRemove, 1);
+    this.reindex();
   }
 
   public moveLineUp(conversation: DialogueExchange, line: DialogueLine) {
-    let indexOfCurrent = conversation.lines.findIndex((value) => {return value.id === line.id; });
-    if (indexOfCurrent > 0) {
-      conversation.lines.splice(indexOfCurrent, 1);
-      conversation.lines.splice(indexOfCurrent-1, 0, line);
+    let i = line.index;
+    if (i > 0) {
+      conversation.lines.splice(i, 1);
+      conversation.lines.splice(i-1, 0, line);
     }
+    this.reindex();
   }
 
   public moveLineDown(conversation: DialogueExchange, line: DialogueLine) {
-    let indexOfCurrent = conversation.lines.findIndex((value) => {return value.id === line.id; });
-    if (indexOfCurrent < conversation.lines.length - 1) {
-      conversation.lines.splice(indexOfCurrent, 1);
-      conversation.lines.splice(indexOfCurrent+1, 0, line);
+    let i = line.index;
+    if (i < conversation.lines.length - 1) {
+      conversation.lines.splice(i, 1);
+      conversation.lines.splice(i+1, 0, line);
     }
+    this.reindex();
   }
 
   public duplicateLine(conversation: DialogueExchange, line: DialogueLine) {
-    let indexOfCurrent = conversation.lines.findIndex((value) => {return value.id == line.id});
+    let indexOfCurrent = line.index;
     conversation.lines.splice(indexOfCurrent+1, 0, line.duplicate());
+    this.reindex();
   }
 
   // STATE FLAG OPTIONS
   public addStateFlag(line: DialogueLine) {
     line.flags.push(new StateFlag(NEW_FLAG));
+    this.reindex();
   }
 
   public removeStateFlag(line: DialogueLine, flag: StateFlag) {
     let indexToRemove = line.flags.findIndex((value) => {value.toString() === flag.toString()});
     line.flags.splice(indexToRemove, 1);
+    this.reindex();
   }
 
   // DIALOGUE CONDITION OPTIONS
   public addDialogueCondition(condition: DialogueCondition) {
     condition.conditions.push(new StateFlag(NEW_FLAG));
+    this.reindex();
   }
 
   public removeDialogueCondition(condition: DialogueCondition, flag: StateFlag) {
     let indexToRemove = condition.conditions.findIndex((value) => {value.toString() === flag.toString()});
     condition.conditions.splice(indexToRemove, 1);
+    this.reindex();
   }
 
   // DIALOGUE BRANCH OPTIONS
   public addDialogueBranch(line: DialogueLine) {
     line.branches.push(new DialogueBranch(NEW_BRANCH));
+    this.reindex();
   }
 
   public removeDialogueBranch(line: DialogueLine, branch: DialogueBranch) {
     let indexToRemove = line.branches.findIndex((value) => {value.toString() === branch.toString()});
     line.branches.splice(indexToRemove, 1);
+    this.reindex();
   }
 }

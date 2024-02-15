@@ -18,11 +18,13 @@ export class DialogueExchange {
     public condition: DialogueCondition;
     public lines: DialogueLine[];
     public expanded: boolean;
+    public index: number;
 
     constructor(exc: DialogueExchangeParseable) {
         this.condition = exc.condition.toStandard();
         this.lines = exc.lines.map(l => l.toStandard());
         this.expanded = true;
+        this.index = 0;
     }
 
     toParseable(): DialogueExchangeParseable {
@@ -33,7 +35,6 @@ export class DialogueExchange {
         const newConversation = new DialogueExchange(this.toParseable());
         let idMap: string[][] = [];
         let currentId: string = '';
-        let nextId: string = '';
         // work backwards through the list
         // as we pass each node, if we find a target id that we've already updated, update it to the new one
         for (let i = newConversation.lines.length - 1; i >= 0; i--) {
@@ -62,6 +63,7 @@ export class DialogueLine {
     public id: string;
     public useManualSelectionForBranches: FormControl;
     public branches: DialogueBranch[];
+    public index: number;
 
     constructor(line: DialogueLineParseable) {
         this.speakerPicture = new FormControl(line.speakerPicture);
@@ -72,6 +74,7 @@ export class DialogueLine {
         this.id = line.id === 'NULL' ? NodeIdService.getUniqueId() : line.id;
         this.useManualSelectionForBranches = new FormControl(line.useManualSelectionForBranches);
         this.branches = line.branches.map(b => b.toStandard());
+        this.index = 0;
     }
 
 
@@ -90,10 +93,12 @@ export class DialogueLine {
 export class StateFlag {
     public flag: FormControl;
     public value: FormControl;
+    public index: number;
 
     constructor(f: StateFlagParseable) {
         this.flag = new FormControl(f.sceneFlag);
         this.value = new FormControl(f.activeValue);
+        this.index = 0;
     }
 
     toParseable() {
@@ -105,11 +110,13 @@ export class DialogueBranch {
     public optionText: FormControl;
     public condition: DialogueCondition;
     public nextLine: FormControl;
+    public index: number;
 
     constructor(b: DialogueBranchParseable) {
         this.optionText = new FormControl(b.optionText);
         this.condition = new DialogueCondition(b.condition);
         this.nextLine = new FormControl(b.nextLine);
+        this.index = 0;
     }
 
     toParseable(): DialogueBranchParseable {

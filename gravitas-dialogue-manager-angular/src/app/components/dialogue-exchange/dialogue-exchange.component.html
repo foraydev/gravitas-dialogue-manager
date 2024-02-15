@@ -1,6 +1,6 @@
 <div class="dialogue-exchange-container center">
     <div class="rowflex">
-        <div class="dialogue-exchange-header">Conversation {{index}}: </div>
+        <div class="dialogue-exchange-header">Conversation {{conversation.index}}: </div>
         <button class="btn btn-rect ml-10" [disabled]="moveUpDisabled()" (click)="state.moveConversationUp(conversation)">Move Up</button>
         <button class="btn btn-rect ml-10" [disabled]="moveDownDisabled()" (click)="state.moveConversationDown(conversation)">Move Down</button>
         <button class="btn btn-rect ml-10" (click)="state.setExpanded(conversation, !conversation.expanded)">{{conversation.expanded ? 'Collapse' : 'Expand'}}</button>
