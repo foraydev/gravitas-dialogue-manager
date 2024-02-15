@@ -223,7 +223,6 @@ export class DialogueFileService {
 
   public moveConversationUp(conversation: DialogueExchange) {
     let indexOfCurrent = this.conversations.findIndex((value) => {return value.toString() === conversation.toString();});
-    console.log(indexOfCurrent);
     if (indexOfCurrent > 0) {
       this.conversations.splice(indexOfCurrent, 1);
       this.conversations.splice(indexOfCurrent-1, 0, conversation);
