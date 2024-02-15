@@ -29,4 +29,8 @@ export class NodeIdService {
     static randInt(min: number, max: number): number {
         return Math.floor(Math.random() * (max - min) + min);
     }
+
+    public static deregister(id: string) {
+        this.idsDistributed.splice(this.idsDistributed.indexOf(id), 1);
+    }
 }

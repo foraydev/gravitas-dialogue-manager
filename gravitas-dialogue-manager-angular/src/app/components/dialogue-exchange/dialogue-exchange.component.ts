@@ -31,6 +31,7 @@ export class DialogueExchangeComponent {
     public validation: ValidationService
   ) {
     this.index = state.conversations.findIndex((value) => { return value.toString() === this.conversation.toString(); }) + 1;
+    console.log(this.index);
   }
 
   moveUpDisabled() {

@@ -69,3 +69,10 @@
 .branch-container-user-input {
     background-color: violet;
 }
+
+.mat-icon {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

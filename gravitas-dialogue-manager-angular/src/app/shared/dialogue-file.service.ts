@@ -34,6 +34,23 @@ export class DialogueFileService {
     }
   }
 
+  public regenerateId(currentId: string) {
+    const newId: string = NodeIdService.getUniqueId();
+    this.conversations.forEach((c) => {
+      c.lines.forEach((l) => {
+        if (l.id == currentId) {
+          l.id = newId;
+        }
+        l.branches.forEach((b) => {
+          if (b.nextLine.value == currentId) {
+            b.nextLine.patchValue(newId);
+          }
+        });
+      });
+    });
+    NodeIdService.deregister(currentId);
+  }
+
   public createNewDialogue() {
     NodeIdService.reset();
     this.conversations = [];
@@ -194,7 +211,9 @@ export class DialogueFileService {
 
   // CONVERSATION OPERATIONS
   public addConversation() {
-    this.conversations.push(new DialogueExchange(NEW_CONVERSATION));
+    const exc = new DialogueExchange(NEW_CONVERSATION);
+    exc.lines[0].speakerPicture.patchValue(exc.lines[0].speakerPicture.value.replace("{DEFAULT}", this.characterName.value));
+    this.conversations.push(exc);
   }
 
   public removeConversation(conversation: DialogueExchange) {
@@ -204,6 +223,7 @@ export class DialogueFileService {
 
   public moveConversationUp(conversation: DialogueExchange) {
     let indexOfCurrent = this.conversations.findIndex((value) => {return value.toString() === conversation.toString();});
+    console.log(indexOfCurrent);
     if (indexOfCurrent > 0) {
       this.conversations.splice(indexOfCurrent, 1);
       this.conversations.splice(indexOfCurrent-1, 0, conversation);
@@ -230,7 +250,9 @@ export class DialogueFileService {
   // LINE OPTIONS
   public addLine(conversation: DialogueExchange) {
     let oldLastLine = conversation.lines[conversation.lines.length - 1];
-    let newLen = conversation.lines.push(new DialogueLine(NEW_LINE));
+    const line = new DialogueLine(NEW_LINE);
+    line.speakerPicture.patchValue(line.speakerPicture.value.replace("{DEFAULT}", this.characterName.value));
+    let newLen = conversation.lines.push(line);
     let newLine = conversation.lines[newLen - 1];
     if (oldLastLine.branches.length === 0) {
       this.addDialogueBranch(oldLastLine);
@@ -241,12 +263,13 @@ export class DialogueFileService {
   }
 
   public removeLine(conversation: DialogueExchange, line: DialogueLine) {
-    let indexToRemove = conversation.lines.findIndex((value) => {return value.toString() === line.toString(); });
+    let indexToRemove = conversation.lines.findIndex((value) => {return value.id === line.id; });
+    NodeIdService.deregister(conversation.lines[indexToRemove].id);
     conversation.lines.splice(indexToRemove, 1);
   }
 
   public moveLineUp(conversation: DialogueExchange, line: DialogueLine) {
-    let indexOfCurrent = conversation.lines.findIndex((value) => {return value.toString() === line.toString(); });
+    let indexOfCurrent = conversation.lines.findIndex((value) => {return value.id === line.id; });
     if (indexOfCurrent > 0) {
       conversation.lines.splice(indexOfCurrent, 1);
       conversation.lines.splice(indexOfCurrent-1, 0, line);
@@ -254,17 +277,16 @@ export class DialogueFileService {
   }
 
   public moveLineDown(conversation: DialogueExchange, line: DialogueLine) {
-    let indexOfCurrent = conversation.lines.findIndex((value) => {return value.toString() === line.toString(); });
-    if (indexOfCurrent > 0) {
+    let indexOfCurrent = conversation.lines.findIndex((value) => {return value.id === line.id; });
+    if (indexOfCurrent < conversation.lines.length - 1) {
       conversation.lines.splice(indexOfCurrent, 1);
       conversation.lines.splice(indexOfCurrent+1, 0, line);
     }
   }
 
   public duplicateLine(conversation: DialogueExchange, line: DialogueLine) {
-    let indexOfCurrent = conversation.lines.findIndex((value) => {value.toString() === line.toString()});
-    conversation.lines.splice(indexOfCurrent, 0, line.duplicate());
-    
+    let indexOfCurrent = conversation.lines.findIndex((value) => {return value.id == line.id});
+    conversation.lines.splice(indexOfCurrent+1, 0, line.duplicate());
   }
 
   // STATE FLAG OPTIONS

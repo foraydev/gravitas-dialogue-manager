@@ -30,7 +30,26 @@ export class DialogueExchange {
     }
 
     duplicate() {
-        return new DialogueExchange(this.toParseable());
+        const newConversation = new DialogueExchange(this.toParseable());
+        let idMap: string[][] = [];
+        let currentId: string = '';
+        let nextId: string = '';
+        // work backwards through the list
+        // as we pass each node, if we find a target id that we've already updated, update it to the new one
+        for (let i = newConversation.lines.length - 1; i >= 0; i--) {
+            let previousId = newConversation.lines[i].id;
+            currentId = NodeIdService.getUniqueId();
+            idMap.push([previousId, currentId]);
+            newConversation.lines[i].id = currentId;
+            newConversation.lines[i].branches.forEach((b) => {
+                idMap.forEach((id) => {
+                    if (b.nextLine.value == id[0]) {
+                        b.nextLine.patchValue(id[1]);
+                    }
+                });
+            });
+        }
+        return newConversation;
     }
 }
 
@@ -61,7 +80,10 @@ export class DialogueLine {
     }
 
     duplicate() {
-        return new DialogueLine(this.toParseable());
+        const newLine = new DialogueLine(this.toParseable());
+        let newId: string = NodeIdService.getUniqueId();
+        newLine.id = newId;
+        return newLine;
     }
 }
 
