@@ -7,6 +7,7 @@ import { DialogueBranchComponent } from '../dialogue-branch/dialogue-branch.comp
 import { StateFlagComponent } from '../state-flag/state-flag.component';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dialogue-line',
@@ -17,7 +18,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     DialogueBranchComponent,
     StateFlagComponent,
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatIconModule
   ]
 })
 export class DialogueLineComponent {
@@ -37,12 +39,12 @@ export class DialogueLineComponent {
   ) {}
 
   public moveUpDisabled() {
-    let indexOfCurrent = this.conversation.lines.findIndex((value) => {value === this.line});
+    let indexOfCurrent = this.conversation.lines.findIndex((value) => { return value.id === this.line.id; });
     return indexOfCurrent <= 0;
   }
 
   public moveDownDisabled() {
-    let indexOfCurrent = this.conversation.lines.findIndex((value) => {value === this.line});
+    let indexOfCurrent = this.conversation.lines.findIndex((value) => { return value.id === this.line.id; });
     return indexOfCurrent >= this.conversation.lines.length - 1;
   }
 

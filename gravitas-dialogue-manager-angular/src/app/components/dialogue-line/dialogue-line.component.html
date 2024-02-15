@@ -1,6 +1,7 @@
 <div class="dialogue-line-container">
-    <div class="line-id">
-        ID: {{line.id}}
+    <div class="line-id rowflex">
+        <div class="btn btn-square mr-15 mat-icon" (click)="state.regenerateId(line.id)"><mat-icon>cached</mat-icon></div>
+        <div>ID: {{line.id}}</div>
     </div>
     <div class="rowflex">
         <div class="mr-15">Speaker Picture: </div>
@@ -43,5 +44,4 @@
         <button class="btn btn-rect ml-10" (click)="state.duplicateLine(conversation, line)">Duplicate</button>
         <button class="btn btn-rect ml-10" (click)="state.removeLine(conversation, line)">Delete</button>
     </div>
-
 </div>
