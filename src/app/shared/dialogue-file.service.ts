@@ -4,9 +4,7 @@ import { DialogueBranch, DialogueCondition, DialogueExchange, DialogueLine, Stat
 import { NEW_BRANCH, NEW_CONVERSATION, NEW_FLAG, NEW_LINE } from './shared-constants';
 import { NodeIdService } from './node-id-service';
 import { ValidationService } from './validation.service';
-import { JsonDecoder } from 'ts.data.json';
 import { DialogueBranchParseable, DialogueConditionParseable, DialogueExchangeParseable, DialogueLineParseable, StateFlagParseable } from './shared-classes-parsing';
-import { DialogueLineComponent } from '../components/dialogue-line/dialogue-line.component';
 
 @Injectable({
   providedIn: 'root'
