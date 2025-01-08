@@ -96,16 +96,18 @@ export class DialogueFileService {
           }
         };
         let correctedFlags: StateFlagParseable[] = [];
-        line.flags.forEach((flag: StateFlagParseable) => {
-          let correctedFlag: StateFlagParseable = {
-            ...NEW_FLAG,
-            ...flag,
-            toStandard: function (): StateFlag {
-              return new StateFlag(this);
-            }
-          };
-          correctedFlags.push(correctedFlag);
-        });
+        if (line.flags != null) {
+          line.flags.forEach((flag: StateFlagParseable) => {
+            let correctedFlag: StateFlagParseable = {
+              ...NEW_FLAG,
+              ...flag,
+              toStandard: function (): StateFlag {
+                return new StateFlag(this);
+              }
+            };
+            correctedFlags.push(correctedFlag);
+          });
+        }
         correctedLine.flags = correctedFlags;
         let correctedBranches: DialogueBranchParseable[] = [];
         line.branches.forEach((branch: DialogueBranchParseable) => {
