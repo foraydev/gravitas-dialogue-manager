@@ -67,7 +67,8 @@ export class DialogueLine {
 
     constructor(line: DialogueLineParseable) {
         this.speakerPicture = new FormControl(line.speakerPicture);
-        this.dialogueBox = new FormControl(line.dialogueBox);
+        const correctedDialogueBox = line.dialogueBox == "" ? "Normal" : line.dialogueBox;
+        this.dialogueBox = new FormControl(correctedDialogueBox);
         this.dialogue = new FormControl(line.dialogue);
         this.useRightSide = new FormControl(line.useRightSide);
         this.flags = line.flags.map(f => f.toStandard());

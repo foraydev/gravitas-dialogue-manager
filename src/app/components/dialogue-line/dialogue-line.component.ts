@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DialogueFileService } from 'src/app/shared/dialogue-file.service';
 import { DialogueExchange, DialogueLine } from 'src/app/shared/shared-classes';
 import { DIALOGUE_BUBBLE_OPTIONS, NEW_CONVERSATION, NEW_LINE, NO_FLAGS } from 'src/app/shared/shared-constants';
@@ -22,7 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule
   ]
 })
-export class DialogueLineComponent {
+export class DialogueLineComponent implements OnInit {
   @Input()
   public line: DialogueLine = new DialogueLine(NEW_LINE);
 
@@ -37,6 +37,14 @@ export class DialogueLineComponent {
     public state: DialogueFileService,
     public validation: ValidationService
   ) {}
+
+  ngOnInit() {
+    // why doesn't this update when the page is loaded?
+    // why do have to patch the value to itself 100 ms after the page loads?
+    setTimeout(() => {
+      this.line.dialogueBox.patchValue(this.line.dialogueBox.value);
+    }, 100);
+  }
 
   public moveUpDisabled() {
     let indexOfCurrent = this.conversation.lines.findIndex((value) => { return value.id === this.line.id; });
