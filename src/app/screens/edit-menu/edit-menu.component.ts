@@ -21,4 +21,8 @@ export class EditMenuComponent {
     public state: DialogueFileService
   ) {
   }
+
+  public returnToHome() {
+    this.state.currentMenu = 'upload';
+  }
 }
