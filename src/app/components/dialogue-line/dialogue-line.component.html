@@ -3,19 +3,40 @@
         <div class="btn btn-square mr-15 mat-icon" (click)="state.regenerateId(line.id)"><mat-icon>cached</mat-icon></div>
         <div>ID: {{line.id}}</div>
     </div>
-    <div class="rowflex">
-        <div class="mr-15">Speaker Picture: </div>
-        <input type="text" [formControl]="line.speakerPicture">
-    </div>
-    <div class="rowflex">
-        <div class="mr-15">Use right side: </div>
-        <input type="checkbox" [formControl]="line.useRightSide">
-    </div>
-    <div class="rowflex">
-        <div class="mr-15">Dialogue Bubble Type: </div>
-        <select [formControl]="line.dialogueBox">
-            <option *ngFor="let option of dialogueOptions" (value)="option">{{option}}</option>
-        </select>
+    <div class="speaker-container">
+        <div class="speaker-title">General Info</div>
+        <div class="speaker-container-column-layout">
+            <div class="speaker-container-column">
+                <div class="rowflex mb-5">
+                    <div class="mr-15">Speaker ID: </div>
+                    <input type="text" [formControl]="line.speakerPicture">
+                </div>
+                <div class="rowflex mb-5">
+                    <div class="mr-15">Emotion: </div>
+                    <input type="text" [formControl]="line.speakerEmotion">
+                </div>
+                <div class="rowflex mb-5">
+                    <div class="mr-15">Use right side: </div>
+                    <input type="checkbox" [formControl]="line.useRightSide">
+                </div>
+                <div class="rowflex">
+                    <div class="mr-15">Dialogue Bubble Type: </div>
+                    <select [formControl]="line.dialogueBox">
+                        <option *ngFor="let option of dialogueOptions" (value)="option">{{option}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="speaker-container-column">
+                <div class="rowflex mb-5">
+                    <div class="mr-15">Voiceline: </div>
+                    <input type="text" [formControl]="line.voiceline">
+                </div>
+                <div class="rowflex mb-5">
+                    <div class="mr-15">Effect: </div>
+                    <input type="text" [formControl]="line.effect">
+                </div>
+            </div>
+        </div>
     </div>
     <div class="mr-15">Dialogue: </div>
     <textarea class="dialogue-textarea" [formControl]="line.dialogue"></textarea>

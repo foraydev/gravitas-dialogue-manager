@@ -56,6 +56,9 @@ export class DialogueExchange {
 
 export class DialogueLine {
     public speakerPicture: FormControl;
+    public speakerEmotion: FormControl;
+    public voiceline: FormControl;
+    public effect: FormControl;
     public dialogueBox: FormControl;
     public dialogue: FormControl;
     public useRightSide: FormControl;
@@ -71,11 +74,24 @@ export class DialogueLine {
         this.dialogueBox = new FormControl(correctedDialogueBox);
         this.dialogue = new FormControl(line.dialogue);
         this.useRightSide = new FormControl(line.useRightSide);
+        this.speakerEmotion = new FormControl(line.speakerEmotion);
+        this.voiceline = new FormControl(line.voiceline);
+        this.effect = new FormControl(line.effect);
         this.flags = line.flags.map(f => f.toStandard());
         this.id = line.id === 'NULL' ? NodeIdService.getUniqueId() : line.id;
         this.useManualSelectionForBranches = new FormControl(line.useManualSelectionForBranches);
         this.branches = line.branches.map(b => b.toStandard());
         this.index = 0;
+
+        // handles uploading a v3 dialogue file and updates it to v4
+        let splitSpeakerPicture: string[] = line.speakerPicture.split("-");
+        if (splitSpeakerPicture.length == 1) {
+            this.speakerPicture.patchValue(splitSpeakerPicture[0]);
+            this.speakerEmotion.patchValue('');
+        } else {
+            this.speakerPicture.patchValue(splitSpeakerPicture.slice(0, -1).join(""));
+            this.speakerEmotion.patchValue(splitSpeakerPicture[splitSpeakerPicture.length - 1]);
+        }
     }
 
 

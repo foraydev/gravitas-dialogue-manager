@@ -31,7 +31,7 @@ export class DialogueExchangeComponent {
   }
 
   moveUpDisabled() {
-    return this.conversation.index <= 1;
+    return this.conversation.index < 1;
   }
 
   moveDownDisabled() {

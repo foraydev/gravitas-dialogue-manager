@@ -19,6 +19,9 @@ export const NEW_BRANCH: DialogueBranchParseable = {
 };
 export const NEW_LINE: DialogueLineParseable = {
     speakerPicture: '{DEFAULT}-normal',
+    speakerEmotion: 'normal',
+    voiceline: '',
+    effect: '',
     dialogueBox: '',
     dialogue: 'Lorem ipsum dolor sit amet.',
     useRightSide: false,

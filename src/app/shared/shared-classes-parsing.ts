@@ -31,6 +31,9 @@ export class DialogueExchangeParseable {
 export class DialogueLineParseable {
     public speakerPicture: string;
     public dialogueBox: string;
+    public speakerEmotion: string;
+    public voiceline: string;
+    public effect: string;
     public dialogue: string;
     public useRightSide: boolean;
     public flags: StateFlagParseable[];
@@ -43,6 +46,9 @@ export class DialogueLineParseable {
         this.dialogueBox = line.dialogueBox.value;
         this.dialogue = line.dialogue.value;
         this.useRightSide = line.useRightSide.value;
+        this.speakerEmotion = line.speakerEmotion.value;
+        this.voiceline = line.voiceline.value;
+        this.effect = line.voiceline.value;
         this.flags = line.flags.map(f => f.toParseable());
         this.id = line.id;
         this.useManualSelectionForBranches = line.useManualSelectionForBranches.value;
