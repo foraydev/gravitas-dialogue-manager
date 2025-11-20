@@ -48,7 +48,7 @@ export class DialogueLineParseable {
         this.useRightSide = line.useRightSide.value;
         this.speakerEmotion = line.speakerEmotion.value;
         this.voiceline = line.voiceline.value;
-        this.effect = line.voiceline.value;
+        this.effect = line.effect.value;
         this.flags = line.flags.map(f => f.toParseable());
         this.id = line.id;
         this.useManualSelectionForBranches = line.useManualSelectionForBranches.value;

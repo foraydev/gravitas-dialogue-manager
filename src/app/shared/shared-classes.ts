@@ -82,16 +82,6 @@ export class DialogueLine {
         this.useManualSelectionForBranches = new FormControl(line.useManualSelectionForBranches);
         this.branches = line.branches.map(b => b.toStandard());
         this.index = 0;
-
-        // handles uploading a v3 dialogue file and updates it to v4
-        let splitSpeakerPicture: string[] = line.speakerPicture.split("-");
-        if (splitSpeakerPicture.length == 1) {
-            this.speakerPicture.patchValue(splitSpeakerPicture[0]);
-            this.speakerEmotion.patchValue('');
-        } else {
-            this.speakerPicture.patchValue(splitSpeakerPicture.slice(0, -1).join(""));
-            this.speakerEmotion.patchValue(splitSpeakerPicture[splitSpeakerPicture.length - 1]);
-        }
     }
 
 
